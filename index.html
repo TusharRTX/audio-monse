@@ -77,6 +77,7 @@
       width: 0%;
       background-color: #4caf50;
       border-radius: 5px;
+      transition: width 0.1s linear;
     }
 
     .background-image {
@@ -130,31 +131,57 @@
     <p class="footer-text">Developed by: Tushar Mirwani</p>
   </div>
 
+  <audio id="player" src="radioterapia.m4a"></audio>
+
   <script>
-    const audioUrl = "radioterapia.m4a";
-    const progressBar = document.getElementById('progress');
-    const audio = new Audio(audioUrl);
+    const audio = document.getElementById("player");
+    const progressBar = document.getElementById("progress");
 
-    audio.autoplay = true;
-    audio.muted = true;   // 🔑 CLAVE PARA PERMITIR AUTOPLAY SIEMPRE
+    const url = new URL(window.location.href);
+    const shouldPlay = url.searchParams.get("play") === "1";
 
-    // Reproducir con mute, luego activar sonido
-    audio.play().then(() => {
-      setTimeout(() => {
-        audio.muted = false;  // 🔊 Se activa sonido sin interacción del usuario
-      }, 500);
-    });
+    // Barra de carga (simulada y visual)
+    function simulateLoading() {
+      let width = 0;
+      const interval = setInterval(() => {
+        if (width >= 100) {
+          clearInterval(interval);
+        } else {
+          width++;
+          progressBar.style.width = width + "%";
+        }
+      }, 40);
+    }
+    simulateLoading();
 
-    audio.addEventListener('timeupdate', function() {
-      if (audio.duration) {
-        const percentage = (audio.currentTime / audio.duration) * 100;
-        progressBar.style.width = percentage + '%';
+    async function startAudio() {
+      try {
+        await audio.play();
+        console.log("Audio reproduciéndose automáticamente");
+      } catch (e) {
+        console.warn("Autoplay bloqueado, aplicando workaround…");
+
+        audio.muted = true;
+
+        try {
+          await audio.play();
+          setTimeout(() => audio.muted = false, 300);
+        } catch (err) {
+          console.error("No se pudo reproducir el audio.", err);
+        }
       }
-    });
+    }
+
+    if (shouldPlay) {
+      startAudio();
+    } else {
+      setTimeout(startAudio, 600);
+    }
   </script>
 
 </body>
 </html>
+
 
 
 

@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Audio</title>
+<style>
+  body { background:white; }
+</style>
+</head>
+<body>
+<script>
+const audioUrl = "Audio para Monse RadioTerapia.m4a";
+
+async function init() {
+  const audio = new Audio(audioUrl);
+  audio.autoplay = true;
+  audio.loop = false;
+
+  // Try normal autoplay
+  try {
+    await audio.play();
+    return;
+  } catch(e) {}
+
+  // Create hidden button and click it programmatically
+  const btn = document.createElement('button');
+  btn.style.opacity=0;
+  btn.style.position='absolute';
+  btn.style.top='0';
+  btn.style.left='0';
+  document.body.appendChild(btn);
+
+  btn.addEventListener('click', () => {
+    audio.play();
+  });
+
+  btn.click();
+}
+init();
+</script>
+</body>
+</html>

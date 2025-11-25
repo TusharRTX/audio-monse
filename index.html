@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Guía Auditiva – Radioterapia</title>
 
   <style>
@@ -34,10 +35,9 @@
       z-index: 2;
     }
 
-    /* LOGO */
     .logo {
-      width: 150px;                
-      margin: 0 auto 20px auto;    
+      width: 150px;
+      margin: 0 auto 20px auto;
       display: block;
     }
 
@@ -64,20 +64,22 @@
       opacity: 0.7;
     }
 
+    /* progress bar mejorada */
     .progress-bar {
       width: 100%;
-      height: 10px;
-      background-color: #eee;
-      border-radius: 5px;
+      height: 14px;
+      background-color: #ddd;
+      border-radius: 10px;
       margin-top: 20px;
+      overflow: hidden;
     }
 
     .progress-bar-fill {
       height: 100%;
       width: 0%;
       background-color: #4caf50;
-      border-radius: 5px;
-      transition: width 0.1s linear;
+      border-radius: 10px;
+      transition: width 0.2s linear;
     }
 
     .background-image {
@@ -93,14 +95,16 @@
       filter: blur(8px);
     }
 
+    /* footer FIX fuera del cuadro */
     .footer-text {
-      position: absolute;
-      bottom: 20px;
+      position: fixed;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 0.8rem;
-      color: #000000;
-      opacity: 0.8;
+      font-size: 0.9rem;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px #000;
+      z-index: 5;
     }
   </style>
 </head>
@@ -111,76 +115,75 @@
 
   <div class="container">
 
-    <img class="logo" 
+    <img class="logo"
       src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Logo_DuocUC.svg/1200px-Logo_DuocUC.svg.png"
       alt="Logo DuocUC">
 
     <h1>
-      Guía Informativa para Pacientes con Discapacidad Visual<br>
+      Guía Informativa para Pacientes con Discapacidad Visual<br />
       en Tratamiento de Radioterapia por Cáncer de Mama
     </h1>
 
     <h2>Hecho por: Carolina Monserrat Sandoval Borjas</h2>
 
-    <p class="loading">Cargando audio…</p>
+    <p class="loading">Reproduciendo audio...</p>
 
     <div class="progress-bar">
       <div id="progress" class="progress-bar-fill"></div>
     </div>
 
-    <p class="footer-text">Developed by: Tushar Mirwani</p>
   </div>
 
-  <audio id="player" src="radioterapia.m4a"></audio>
+  <p class="footer-text">Developed by: Tushar Mirwani</p>
+
+  <audio id="audio" src="radioterapia.m4a"></audio>
 
   <script>
-    const audio = document.getElementById("player");
+    const audio = document.getElementById("audio");
     const progressBar = document.getElementById("progress");
 
+    // Detectar autoplay desde QR
     const url = new URL(window.location.href);
-    const shouldPlay = url.searchParams.get("play") === "1";
-
-    // Barra de carga (simulada y visual)
-    function simulateLoading() {
-      let width = 0;
-      const interval = setInterval(() => {
-        if (width >= 100) {
-          clearInterval(interval);
-        } else {
-          width++;
-          progressBar.style.width = width + "%";
-        }
-      }, 40);
-    }
-    simulateLoading();
+    const mustPlay = url.searchParams.get("play") === "1";
 
     async function startAudio() {
       try {
         await audio.play();
-        console.log("Audio reproduciéndose automáticamente");
-      } catch (e) {
-        console.warn("Autoplay bloqueado, aplicando workaround…");
+        console.log("Autoplay OK");
+      } catch (err) {
+        console.log("Bloqueado. Activando truco…");
 
         audio.muted = true;
 
         try {
           await audio.play();
           setTimeout(() => audio.muted = false, 300);
-        } catch (err) {
-          console.error("No se pudo reproducir el audio.", err);
+        } catch (e) {
+          console.warn("No se pudo reproducir.");
         }
       }
     }
 
-    if (shouldPlay) {
+    if (mustPlay) {
       startAudio();
     } else {
-      setTimeout(startAudio, 600);
+      setTimeout(startAudio, 500);
     }
+
+    // Barra de progreso real
+    audio.addEventListener("timeupdate", () => {
+      if (audio.duration > 0) {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = pct + "%";
+      }
+    });
   </script>
 
 </body>
+
 </html>
+
+
 
 
 
